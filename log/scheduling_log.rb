@@ -90,6 +90,25 @@ class Scheduling
         end
     end
 
+    def print_leq_condition(f, flag, t, s1, c1, s2, c2)
+        case flag
+        when 0
+            f.puts "-#{t} -#{s1} -#{c1} #{c2} 0"
+            f.puts "-#{t} -#{s1} #{s2} #{c2} 0"
+            f.puts "-#{t} -#{c1} #{s2} #{c2} 0"
+        when 1
+            f.puts "-#{t} #{s2} #{c2} 0"
+            f.puts "-#{t} -#{c1} -#{s2} #{c2} 0"
+            f.puts "-#{t} -#{s1} -#{s2} #{c2} 0"
+            f.puts "-#{t} -#{s1} -#{c1} #{s2} 0"
+        when 2
+            f.puts "-#{t} #{c2} 0"
+            f.puts "-#{t} -#{c1} #{s2} -#{c2} 0"
+            f.puts "-#{t} -#{s1} #{s2} -#{c2} 0"
+            f.puts "-#{t} -#{s1} -#{c2} 0"
+        end
+    end
+
 
     def print_max_conditions(f)
         1.upto(@n*@m) do |i|
@@ -108,15 +127,9 @@ class Scheduling
                     c2 = get_number("c_{s_#{i}^{(#{j+2})}}")
 
                     if (@p[i-1] >> (j+1))&1 == 1
-                        f.puts "-#{t} #{c2} 0"
-                        f.puts "-#{t} -#{c1} #{m} -#{c2} 0"
-                        f.puts "-#{t} -#{s} #{m} -#{c2} 0"
-                        f.puts "-#{t} -#{s} -#{c2} 0"
+                        print_leq_condition(f, 2, t, s, c1, m, c2)
                     else
-                        f.puts "-#{t} #{m} #{c2} 0"
-                        f.puts "-#{t} -#{c1} -#{m} #{c2} 0"
-                        f.puts "-#{t} -#{s} -#{m} #{c2} 0"
-                        f.puts "-#{t} -#{s} -#{c1} #{m} 0"
+                        print_leq_condition(f, 1, t, s, c1, m, c2)
                     end
                 }.call
 
@@ -128,16 +141,13 @@ class Scheduling
                     c2 = get_number("c_{s_#{i}^{(#{j+1})}}")
                     
                     if (@p[i-1] >> j)&1 == 1
-                        f.puts "-#{t} #{m} #{c2} 0"
-                        f.puts "-#{t} -#{c1} -#{m} #{c2} 0"
-                        f.puts "-#{t} -#{s} -#{m} #{c2} 0"
-                        f.puts "-#{t} -#{s} -#{c1} #{m} 0"
+                        print_leq_condition(f, 1, t, s, c1, m, c2)
+
                         f.puts "-#{s} #{c2} 0"
                         f.puts "-#{c1} #{c2} 0"
                     else
-                        f.puts "-#{t} -#{s} -#{c1} #{c2} 0"
-                        f.puts "-#{t} -#{s} #{m} #{c2} 0"
-                        f.puts "-#{t} -#{c1} #{m} #{c2} 0"
+                        print_leq_condition(f, 0, t, s, c1, m, c2)
+
                         f.puts "-#{s} -#{c1} #{c2} 0"
                     end
                 }.call
