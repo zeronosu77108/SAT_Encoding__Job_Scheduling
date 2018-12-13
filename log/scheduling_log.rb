@@ -113,115 +113,34 @@ class Scheduling # {{{
     def print_leq_condition(f, flag, t, s1, c1, s2, c2, ff=false)# {{{
         case flag
         when -1
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{c2} #{s1} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{c2} #{s1} 0"
-
           f.puts "-#{t} #{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} -#{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} #{c1} -#{s2} #{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} #{s2} #{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} -#{s2} #{c2} 0"
 
         when 0
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} #{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} #{s2} #{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{c1} #{s2} #{c2} 0"
-
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{c1} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} #{c2} 0"
-
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} -#{c1} #{s2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} #{c1} #{s2} 0"
-
-          f.puts "-#{t} #{s1} #{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} #{s2} #{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} -#{s2} #{c2} 0"
 
         when 1
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s2} #{c2} 0" 
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{c1} -#{s2} #{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{s2} #{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} #{s2} 0"
-
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} #{c1} #{s2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} #{c1} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} -#{c1} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} #{c1} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} #{s2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} -#{c2} 0"
-
           f.puts "-#{t} #{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} #{s1} -#{c1} -#{s2} -#{c2} 0"
+          f.puts "-#{t} #{s1} -#{c1} -#{s2} #{c2} 0"
           f.puts "-#{t} -#{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} #{s2} -#{c2} 0"
-          f.puts "-#{t} -#{s1} #{c1} -#{s2} -#{c2} 0"
+          f.puts "-#{t} -#{s1} #{c1} -#{s2} #{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} #{s2} #{c2} 0"
+          f.puts "-#{t} -#{s1} -#{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} -#{s1} -#{c1} -#{s2} #{c2} 0"
 
         when 2
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{c1} #{s2} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} #{s2} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} 0"
-
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{c2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s2} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} #{s1} #{c1} 0"
-            # f.print "-#{ff} " if ff
-            # f.puts "-#{t} -#{s1} -#{c1} 0"
-
           f.puts "-#{t} #{s1} #{c1} #{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} #{c1} -#{s2} #{c2} 0"
-          f.puts "-#{t} #{s1} #{c1} -#{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} #{s2} #{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} #{s2} -#{c2} 0"
           f.puts "-#{t} #{s1} -#{c1} -#{s2} #{c2} 0"
