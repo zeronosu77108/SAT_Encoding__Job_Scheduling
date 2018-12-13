@@ -1,7 +1,7 @@
 class Scheduling # {{{
     def initialize# {{{
         @n = 3
-        @m = 3
+        @m = 2
         @variables = ["m"]
         @conditions = []
 
@@ -20,6 +20,7 @@ class Scheduling # {{{
         @p = [5,8,4,5,4,6,6,5,5]
         p @p
         init_conditions()
+        p @conditions
     end# }}}
 
     def init_conditions()# {{{
@@ -29,18 +30,18 @@ class Scheduling # {{{
             end
         end
 
-        0.upto @n-1 do |i|
-            1.upto @n do |j|
-                (j+1).upto @m do |k|
-                    @conditions << [i*@m+j, i*@m+k]
+        0.upto @m-1 do |i|
+            1.upto @n-1 do |j|
+                (j+1).upto @n do |k|
+                    @conditions << [i*@n+j, i*@n+k]
                 end
             end
         end
 
-        1.upto @m do |i|
-            0.upto @n-1 do |j|
-                (j+1).upto(@n-1) do |k|
-                    @conditions << [@m*j+i, @m*k+i]
+        1.upto @n do |i|
+            0.upto @m do |j|
+                (j+1).upto @m-1 do |k|
+                    @conditions << [@n*j+i, @n*k+i]
                 end
             end
         end
