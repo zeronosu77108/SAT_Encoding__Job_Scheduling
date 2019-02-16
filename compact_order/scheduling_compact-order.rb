@@ -80,6 +80,21 @@ class Scheduling # {{{
       end
     end
 
+    # define Domain
+    1.upto (@n*@m) do |vi|
+      # max - pi をしてその値を B進 に分解
+      # si の各桁が その値以下であるという制約を追加す:
+      (@max - @p[vi-1]).to_s(@B).rjust(@max_b, '0').chars.map(&:to_i).reverse.each_with_index do |m,i|
+          next if m >= @B-1
+          v = get_number("p(s_#{vi}^{(#{i})}<=#{m})")
+          f.print "#{prev}" if prev != ""
+          f.puts "#{v} 0"
+          prev += "-#{v} " if m != 0
+          p prev
+        end
+    end
+
+
 
     # define carry Proposition variables
     1.upto(@n*@m) do |i|
