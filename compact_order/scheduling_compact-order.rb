@@ -99,14 +99,14 @@ class Scheduling # {{{
           # c_i が 0 の場合
           # ¬p(s1 <= (B-p1-1)) -> c2
           # p1 が 0 のときはスキップ（桁上げが起きない）
+          s1 = get_number("p(s_#{i}^{(#{j-1})}<=#{(@B-p[j-1]-1)})")
           if p[j-1] != 0
-            s1 = get_number("p(s_#{i}^{(#{j-1})}<=#{(@B-p[j-1]-1)})")
             f.puts "#{s1} #{c2} 0"
           end
 
           # c2 -> ¬p(s1 <= (B-p1-1)) ∨ q
           tseitin = get_number(@tseitin_count); @tseitin_count.next!
-          f.puts "-#{c2} #{s1} #{tseitin} 0"
+          f.puts "-#{c2} -#{s1} #{tseitin} 0"
 
           # c_i が 1 の場合
           # ( ¬p(s1 <= (B-p1-2)) ∧ c1 ) -> c2
