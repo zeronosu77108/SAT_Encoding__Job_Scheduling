@@ -183,48 +183,6 @@ class Scheduling # {{{
     end
   end# }}}
 
-  def print_max_conditions(f)# {{{
-    1.upto(@n*@m) do |i|
-      f.puts "-#{get_number("s_#{i}^{(#{@max_b-1})}")} -#{get_number("c_{s_#{i}^{(#{@max_b-1})}}")} 0"
-      f.puts "#{get_number("m^{(#{@max_b-1})}")} -#{get_number("s_#{i}^{(#{@max_b-1})}")} 0"
-      f.puts "#{get_number("m^{(#{@max_b-1})}")} -#{get_number("c_{s_#{i}^{(#{@max_b-1})}}")} 0"
-
-      (@max_b-2).downto 0 do |j|
-        f.puts "#{get_number(@tseitin_count)} #{get_number(@tseitin_count.next)} 0"
-
-        lambda {# {{{
-          t = get_number(@tseitin_count)
-          s = get_number("s_#{i}^{(#{j+1})}")
-          c1 = get_number("c_{s_#{i}^{(#{j+1})}}")
-          m = get_number("m^{(#{j+1})}")
-          c2 = get_number("c_{s_#{i}^{(#{j+2})}}")
-
-          if (@p[i-1] >> (j+1))&1 == 1
-            print_leq_condition(f, 2, t, s, c1, m, c2)
-          else
-            print_leq_condition(f, -1, t, s, c1, m, c2)
-          end
-        }.call# }}}
-
-        lambda {# {{{
-          t = get_number(@tseitin_count.next)
-          s = get_number("s_#{i}^{(#{j})}")
-          c1 = get_number("c_{s_#{i}^{(#{j})}}")
-          m = get_number("m^{(#{j})}")
-          c2 = get_number("c_{s_#{i}^{(#{j+1})}}")
-
-          if (@p[i-1] >> j)&1 == 1
-            print_leq_condition(f, 1, t, s, c1, m, c2)
-          else
-            print_leq_condition(f, 0, t, s, c1, m, c2)
-          end
-        }.call# }}}
-
-        @tseitin_count.next!.next!
-      end
-    end
-  end# }}}
-
   def print_exclusive_conditions(f)# {{{
     @conditions.each do |cond|
       tseitin_variable = []
