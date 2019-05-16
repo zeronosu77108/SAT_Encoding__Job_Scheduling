@@ -153,6 +153,7 @@ class Scheduling # {{{
           end
         end
       end
+      f.puts "-#{get_number("c_{s_#{i}^{(#{@B-1})}}")} 0"
     end
   end# }}}
 
@@ -165,38 +166,37 @@ class Scheduling # {{{
     # c2 = "c_{s_#{cond[0]}^{(#{i+2})}}"
     # p  =@p[cond[0]-1]
 
-    (p).upto(@B-2) do |i|
-      next if i<0
-      f.print "-#{t} -#{get_number(c1)} "
-      f.print "#{get_number("p(#{s1}<=#{i-p-1})")} " if (i-p-1)<@B-1 && (i-p-1)>=0
-      f.print "-#{get_number("p(#{s2}<=#{i})")} " if i<@B-1 && i>=0
-      f.puts  "#{get_number(c2)} 0"
-      print "-#{t} -#{(c1)} "
-      print "#{("p(#{s1}<=#{i-p-1})")} " if (i-p-1)<@B-1 && (i-p-1)>=0
-      print "-#{("p(#{s2}<=#{i})")} " if i<@B-1 && i>=0
-      puts  "#{(c2)} 0"
+    (@B).times do |i|
+      vs = [ i+@B-p-1, i+@B-p, i-p-1, i-p ]
+      vs_str = [ "i+@B-p-1", "i+@B-p", "i-p-1", "i-p" ]
+      # puts "2019/05/08 : #{s1}"
+      s1_t = get_number "p(#{s1}<=#{i})"
+      puts "p(#{s1}<=#{i})"
+      c1_t = -1 * (get_number c1)
+      c2_t = -1 * (get_number c2)
+
+      vs.each_with_index do |v, vi|
+        puts "v#{vi} #{vs_str[vi]} : #{v}"
+        if v < @B-1
+          f.print "-#{t} "
+          f.print "-#{s1_t} " if i <= @B-1
+          f.print "#{c1_t} #{c2_t} "
+          if v >= 0
+            s2_t = get_number "p(#{s2}<=#{v})"
+            puts "p(#{s2}<=#{v})"
+            f.print "#{s2_t} "
+          else 
+            puts "禁止"
+          end
+          f.puts "0"
+        end
+        c1_t *= -1
+        if c1_t < 0
+          c2_t *= -1
+        end
+      end
     end
 
-    if @B-p < @B-1
-      f.print "-#{t} -#{get_number(c1)} "
-      f.print "#{get_number("p(#{s1}<=#{@B-p})")} "
-      f.puts "-#{get_number(c2)} 0"
-      print "-#{t} -#{(c1)} "
-      print "#{("p(#{s1}<=#{@B-p})")} "
-      puts "-#{(c2)} 0"
-    end
-
-    (p).upto(@B-2) do |i|
-      next if i<0
-      f.print "-#{t} "
-      f.print "#{get_number("p(#{s1}<=#{i-2})")} " if i-2>=0
-      f.print "-#{get_number("p(#{s2}<=#{i-1})")} " if i-1>=0
-      f.puts "#{get_number(c2)} 0"
-      print "-#{t} "
-      print "#{("p(#{s1}<=#{i-2})")} " if i-2>=0
-      print "-#{("p(#{s2}<=#{i-1})")} " if i-1>=0
-      puts "#{c2} 0"
-    end
     
   
   end# }}}
@@ -214,77 +214,79 @@ class Scheduling # {{{
       # a -> (s1 + p1 <= s2)
       # b -> (s2 + p2 <= s1)
       tseitin_variable.each do |tv|
-        p = @p[cond[0]-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+        p_l = @p[cond[1]-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
         
-        puts "s_#{cond[0]} + #{p} <= s_#{cond[1]}"
-        
+        puts "s_#{cond[1]} + #{p_l} <= s_#{cond[0]}"
+
+        # p = p[cond[0]-1]
+
         # 1 桁目
-        f.puts "-#{tv} -#{get_number("c_{s_#{cond[0]}^{(#{@max_b-1})}}")} -#{get_number("p(m^{(#{@max_b-1})}<=0)")} 0"
-        puts "-#{tv} -c_{s_#{cond[0]}^{(#{@max_b-1})}} p(m^{(#{@max_b-1})}<=0) 0"
-        
-        f.print "-#{tv} -#{get_number("c_{s_#{cond[0]}^{(#{@max_b-1})}}")} "
-        f.puts "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=0)")} -#{get_number("p(m^{(#{@max_b-1})}<=1)")} 0"
-        puts "-#{tv} -c_{s_#{cond[0]}^{(#{@max_b-1})}} p(s_#{cond[0]}^{(#{@max_b-1})}<=0) p(m^{(#{@max_b-1})}<=1) 0"
-        
-        f.print "-#{tv} -#{get_number("c_{s_#{cond[0]}^{(#{@max_b-1})}}")} "
-        f.puts "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=1)")} -#{get_number("p(m^{(#{@max_b-1})}<=2)")} 0"
-        puts "-#{tv} c_{s_#{cond[0]}^{(#{@max_b-1})}} p(s_#{cond[0]}^{(#{@max_b-1})}<=1) p(m^{(#{@max_b-1})}<=2) 0"
-        
-        f.print "-#{tv} -#{get_number("c_{s_#{cond[0]}^{(#{@max_b-1})}}")} "
-        f.puts "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=2)")} 0"
-        puts "-#{tv} c_{s_#{cond[0]}^{(#{@max_b-1})}} p(s_#{cond[0]}^{(#{@max_b-1})}<=2)"
-        
-        f.print "-#{tv} "
-        f.print "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=0)")} "
-        f.puts "-#{get_number("p(m^{(#{@max_b-1})}<=0)")} 0"
-        print "-#{tv} "
-        print "p(s_#{cond[-1]}^{(#{@max_b-1})}<=0) "
-        puts "p(m^{(#{@max_b-1})}<=0) 0"
-        
-        f.print "-#{tv} "
-        f.print "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=1)")} "
-        f.puts "-#{get_number("p(m^{(#{@max_b-1})}<=1)")} 0"
-        print "-#{tv} "
-        print "p(s_#{cond[0]}^{(#{@max_b-1})}<=1) "
-        puts "-p(m^{(#{@max_b-1})}<=1) 0"
-        
-        f.print "-#{tv} "
-        f.print "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=2)")} "
-        f.puts "-#{get_number("p(m^{(#{@max_b-1})}<=2)")} 0"
-        print "-#{tv} "
-        print "#{get_number("p(s_#{cond[0]}^{(#{@max_b-1})}<=2)")} "
-        puts "-#{get_number("p(m^{(#{@max_b-1})}<=2)")} 0"
+        # s1 + p1 + c2 <= m + 4c3
+        p = p_l[0]
+        puts "p : #{p}"
+        (@B).times do |i|
+          vs = [ i+@B-p-1, i+@B-p, i-p-1, i-p ]
+          vs_str = [ "i+@B-p-1", "i+@B-p", "i-p-1", "i-p" ]
+          
+          s1 = get_number "p(s_#{cond[0]}^{(#{@max_b-1})}<=#{i})"
+          puts "p(s_#{cond[0]}^{(#{@max_b-1})}<=#{i})"
+          c1 = -1 * (get_number "c_{s_#{cond[1]}^{(#{@max_b-1})}}")
+          c2 = -1 * (get_number "c_{s_#{cond[1]}^{(#{@max_b})}}")
 
-
+          vs.each_with_index do |v, vi|
+            puts "v#{vi} #{vs_str[vi]} : #{v}"
+            if v < @B-1
+              f.print "-#{tv} "
+              f.print "-#{s1} " if i <= @B-1
+              f.print "#{c1} #{c2} "
+              # f.print "-#{tv} -#{s1} #{c1} #{c2} "
+              if v >= 0
+                s2 = get_number "p(s_#{cond[1]}^{(#{@max_b-1})}<=#{v})"
+                puts "p(s_#{cond[1]}^{(#{@max_b-1})}<=#{v})"
+                f.print "#{s2} "
+              else 
+                puts "禁止"
+              end
+              f.puts "0"
+            end
+            c1 *= -1
+            if c1 < 0
+              c2 *= -1
+            end
+          end
+        end
 
         # 2 桁目以降
         puts "#####"
         puts "2桁目以降"
         prev_tv = ""
+        p_l.reverse!
         (@max_b-2).downto 0 do |i|
           f.print "-#{prev_tv} " if prev_tv != ""
           
           f.puts "-#{tv} #{get_number(@tseitin_count)} #{get_number(@tseitin_count.next)} 0"
           lambda {
             t  = get_number(@tseitin_count)
-            s1 = "s_#{cond[0]}^{(#{i+1})}"
-            c1 = "c_{s_#{cond[0]}^{(#{i+1})}}"
-            s2 = "s_#{cond[1]}^{(#{i+1})}"
-            c2 = "c_{s_#{cond[0]}^{(#{i+2})}}"
-            p  = @p[cond[0]-1]
+            s1 = "s_#{cond[1]}^{(#{i+1})}"
+            c1 = "c_{s_#{cond[1]}^{(#{i+1})}}"
+            s2 = "s_#{cond[0]}^{(#{i+1})}"
+            c2 = "c_{s_#{cond[1]}^{(#{i+2})}}"
+            # p  = @p[cond[0]-1]
+            p = p_l[i+1]
             
-            print_leq_condition(f, t, s1, c1, s2, c2, p[i]+1, tv)
+            print_leq_condition(f, t, s2, c1, s1, c2, p+1, tv)
           }.call
           
           lambda {
             t  = get_number(@tseitin_count.next)
-            s1 = "s_#{cond[0]}^{(#{i+0})}"
-            c1 = "c_{s_#{cond[0]}^{(#{i+0})}}"
-            s2 = "s_#{cond[1]}^{(#{i+0})}"
-            c2 = "c_{s_#{cond[0]}^{(#{i+1})}}"
-            p  = @p[cond[0]-1]
+            s1 = "s_#{cond[1]}^{(#{i+0})}"
+            c1 = "c_{s_#{cond[1]}^{(#{i+0})}}"
+            s2 = "s_#{cond[0]}^{(#{i+0})}"
+            c2 = "c_{s_#{cond[1]}^{(#{i+1})}}"
+            # p  = @p[cond[0]-1]
+            p = p_l[i]
             
-            print_leq_condition(f, t, s1, c1, s2, c2, p[i], tv)
+            print_leq_condition(f, t, s2, c1, s1, c2, p, tv)
             
             prev_tv = t
           }.call
