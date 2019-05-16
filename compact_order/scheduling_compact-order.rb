@@ -158,7 +158,7 @@ class Scheduling # {{{
   end# }}}
 
   def print_leq_condition(f, t, s1, c1, s2, c2, p, ff=false)# {{{
-    puts "#{s1} + #{p} + #{c1} <= #{s2} + #{@B}#{c2}"
+    puts "#{s2} + #{p} + #{c1} <= #{s1} + #{@B}#{c2}"
     # t  = get_number(@tseitin_count)
     # s1 = "s_#{cond[0]}^{(#{i+1})}"
     # c1 = "c_{s_#{cond[0]}^{(#{i+1})}}"
@@ -170,7 +170,7 @@ class Scheduling # {{{
       vs = [ i+@B-p-1, i+@B-p, i-p-1, i-p ]
       vs_str = [ "i+@B-p-1", "i+@B-p", "i-p-1", "i-p" ]
       # puts "2019/05/08 : #{s1}"
-      s1_t = get_number "p(#{s1}<=#{i})"
+      s1_t = get_number "p(#{s1}<=#{i})" if i < @B-1
       puts "p(#{s1}<=#{i})"
       c1_t = -1 * (get_number c1)
       c2_t = -1 * (get_number c2)
@@ -179,7 +179,7 @@ class Scheduling # {{{
         puts "v#{vi} #{vs_str[vi]} : #{v}"
         if v < @B-1
           f.print "-#{t} "
-          f.print "-#{s1_t} " if i <= @B-1
+          f.print "-#{s1_t} " if i < @B-1
           f.print "#{c1_t} #{c2_t} "
           if v >= 0
             s2_t = get_number "p(#{s2}<=#{v})"
@@ -227,8 +227,8 @@ class Scheduling # {{{
         (@B).times do |i|
           vs = [ i+@B-p-1, i+@B-p, i-p-1, i-p ]
           vs_str = [ "i+@B-p-1", "i+@B-p", "i-p-1", "i-p" ]
-          
-          s1 = get_number "p(s_#{cond[0]}^{(#{@max_b-1})}<=#{i})"
+           
+          s1 = get_number "p(s_#{cond[0]}^{(#{@max_b-1})}<=#{i})" if i < @B-1
           puts "p(s_#{cond[0]}^{(#{@max_b-1})}<=#{i})"
           c1 = -1 * (get_number "c_{s_#{cond[1]}^{(#{@max_b-1})}}")
           c2 = -1 * (get_number "c_{s_#{cond[1]}^{(#{@max_b})}}")
@@ -237,7 +237,7 @@ class Scheduling # {{{
             puts "v#{vi} #{vs_str[vi]} : #{v}"
             if v < @B-1
               f.print "-#{tv} "
-              f.print "-#{s1} " if i <= @B-1
+              f.print "-#{s1} " if i < @B-1
               f.print "#{c1} #{c2} "
               # f.print "-#{tv} -#{s1} #{c1} #{c2} "
               if v >= 0
