@@ -353,8 +353,6 @@ class Scheduling # {{{
 
     # f.puts "print_define_variables(f)"
     print_define_variables(f)
-
-    # print_max_conditions(f)
     
     # f.puts "print_exclusive_conditions(f)"
     print_exclusive_conditions(f)
