@@ -1,6 +1,6 @@
 class Scheduling # {{{
   def initialize# {{{
-    @debug_flag = false
+    @debug_flag = true
     input_file = ""
     if ARGV.length <= 0
       puts "OSS file : "
@@ -47,9 +47,9 @@ class Scheduling # {{{
     puts ""
     
     # @p =
-    print "conditions : "
+    print "conditions : " if @debug_flag
     init_conditions()
-    p @conditions
+    p @conditions if @debug_flag
   end# }}}
 
   def init_conditions()# {{{
@@ -197,9 +197,9 @@ class Scheduling # {{{
       # b -> (s2 + p2 <= s1)
       tseitin_variable.each do |tv|
         p_l = @p[cond[0]-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+        p p_l if @debug_flag
         
         prev_tv = ""
-        p p_l
         puts "#{tseitin_variable[0]} #{tseitin_variable[1]} 0" if @debug_flag
         prev_tv = 0
         current_tv = 0
@@ -265,6 +265,18 @@ class Scheduling # {{{
             f.puts "#{wff}0" if print_flag
             puts wff_str if @debug_flag && print_flag
           end# }}}}}}
+
+          # wff = "-#{tv} "
+          # wff_str = "-#{tv} "
+          # wff += "#{prev_tv} " if prev_tv != 0
+          # wff_str += "#{prev_tv} " if prev_tv !=0
+          #
+          # wff += "#{current_tv} " if pi==3
+          # wff_str += "#{current_tv} " if pi==3
+
+          f.puts "#{wff}0" if pi == 3
+          puts "#{wff_str}0" if pi == 3 && @debug_flag
+          
           prev_tv = -1 * current_tv
           @tseitin_count.next!
         end
