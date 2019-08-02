@@ -19,6 +19,7 @@ for el in s
 end
 close(enf)
 
+codes = replace(codes, r"^\ *\n"m => "")
 codes = replace(codes, "\n" => " 0\n")
 
 outf = open(outputfile, "w")
