@@ -20,7 +20,7 @@ class Scheduling # {{{
     @p = s.flatten
     # p @p
 
-    @variables = ["m"]
+    @variables = []
     @conditions = []
     
     @numbers = {}
@@ -93,9 +93,20 @@ class Scheduling # {{{
     # define Integer Proposition variables
     @variables.each_with_index do |v|
       (@max_b).times do |i|
-          (@B-1).times do |j|
-            get_number("p(#{v}^{(#{i})}<=#{j})")
+          (@B).times do |j|
+            s1 = get_number("p(#{v}^{(#{i})}=#{j})")
+            f.print "#{s1} "
           end
+          f.puts " 0"
+
+          0.upto(@B-1) do |j|
+            (j+1).upto(@B-1) do |k|
+              s1 = get_number("p(#{v}^{(#{i})}=#{j})")
+              s2 = get_number("p(#{v}^{(#{i})}=#{k})")
+              puts "¬p(#{v}^{(#{i})}=#{j}) ¬p(#{v}^{(#{i})}=#{k})" if @debug_flag
+              f.puts "#{-1*s1} #{-1*s2} 0"
+            end
+          end 
       end
     end
 
@@ -121,6 +132,15 @@ class Scheduling # {{{
       end
     end# }}}
 
+    1.upto(@n*@m) do |vi|
+      0.upto @max_b  do |j|
+        c = get_number("c_{s_#{vi}^{(#{j})}}")
+        if(j == 0)
+          puts "¬c_{s_#{vi}^{(#{j})}}" if @debug_flag
+          f.puts "#{-1*c} 0"
+        end
+      end
+    end
 
     # define carry conditions
     puts "\ndefine carry conditions" if @debug_flag
@@ -128,12 +148,19 @@ class Scheduling # {{{
       p_l = @p[vi-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
       p p_l
       p_l.each_with_index do |i,index|
+        ss = ""
+        ss_str = ""
+        c = get_number("c_{s_#{vi}^{(#{@max_b-index})}}")
+
         (@B-1).downto (@B-i) do |j|
           s = get_number("p(s_#{vi}^{(#{@max_b-index-1})}=#{j})")
-          c = get_number("c_{s_#{vi}^{(#{@max_b-index})}}")
           puts "p(s_#{vi}^{(#{@max_b-i-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}" if @debug_flag
+          ss_str += "p(s_#{vi}^{(#{@max_b-i-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}"
           f.puts "#{-1*s} #{c} 0"
+          ss += "#{s} ";
         end
+        puts "c_{s_#{vi}^{(#{@max_b-index})}} → #{ss_str}"
+        f.puts "#{-1*c} #{ss} 0"
       end
     end
   end# }}}
@@ -154,87 +181,57 @@ class Scheduling # {{{
       tseitin_variable.each do |tv|
         p_l = @p[cond[0]-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
         p p_l if @debug_flag
-        
-        prev_tv = ""
+
         puts "#{tseitin_variable[0]} #{tseitin_variable[1]} 0" if @debug_flag
         prev_tv = 0
         current_tv = 0
+
         p_l.each_with_index do |pi,p_index|
-          s = pi - 1
-          s=0 if s<0
+          @B.times do |i|
+            ■ = [i-pi, i-1-pi, i+@B-pi, i+@B-1-pi]
+            p ■
+            ■.each_with_index do |▲,▲i| 
+              next if ▲ >= @B-1
+              s2 = get_number("p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{i})")
+              c1 = get_number("c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}}")
+              c2 = get_number("c_{s_#{cond[0]}^{(#{@max_b-p_index})}}")
+              c1 *= -1 if ▲i < 2
+              c2 *= -1 if ▲i.even?
 
-          s.upto(@B-1) do |i|# {{{
-            wff = "-#{tv} "
-            wff_str = "-#{tv} "
-            wff += "#{prev_tv} " if prev_tv !=0
-            wff_str += "#{prev_tv} " if prev_tv!=0
-            print_flag = false
+              # print "#{tv} → " if @debug_flag
+              # print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
+              # print "¬" if ▲i > 1
+              # print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
+              # print "¬" if ▲i.odd?
+              # print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
 
-            if i-pi >= 0 && i-pi<@B-1
-              s1 = get_number("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}<=#{i-pi})")
-              s1_str = ("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}<=#{i-pi})")
-              wff += "#{s1} "
-              wff_str += "#{s1_str} "
-              print_flag = true
+              # f.print "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} " 
+
+              if (▲ >= 0) 
+                (▲ + 1).upto(@B-1) do |j|
+                  s1 = get_number("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{j})")
+                  print "#{tv} → " if @debug_flag
+                  print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
+                  print "¬" if ▲i < 2
+                  print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
+                  print "¬" if ▲i.even?
+                  print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
+                  puts "¬p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{j})" if @debug_flag
+
+                  f.puts "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} #{-1*s1} 0" 
+                end
+              else
+                print "#{tv} → " if @debug_flag
+                print 
+                "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
+                print "¬" if @debug_flag && ▲i > 1
+                print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
+                print "¬" if @debug_flag && ▲i.odd?
+                puts "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
+                f.puts "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} 0"
+              end
             end
-
-            if i < 3 
-              s2 = -1 * get_number("p(s_#{cond[1]}^{(#{@max_b-1-p_index})}<=#{i})")
-              s2_str = ("-p(s_#{cond[1]}^{(#{@max_b-1-p_index})}<=#{i})")
-              wff += "#{s2} "
-              wff_str += "#{s2_str} "
-              print_flag = true
-            end
-            
-            f.puts "#{wff}0" if print_flag 
-            puts wff_str if @debug_flag && print_flag
-          end# }}}
-
-
-          pi.upto(@B-1) do |i|# {{{{{{
-            wff = "-#{tv} "
-            wff_str = "-#{tv} "
-            wff += "#{prev_tv} " if prev_tv != 0
-            wff_str += "#{prev_tv} " if prev_tv !=0
-            print_flag = false
-
-            if i-pi-1 >= 0 && i-pi-1<@B-1
-              s1 = get_number("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}<=#{i-pi-1})")
-              s1_str = ("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}<=#{i-pi-1})")
-              wff += "#{s1} "
-              wff_str += "#{s1_str} "
-              print_flag = true
-            end
-
-            if i < @B-1
-              s2 = -1 * get_number("p(s_#{cond[1]}^{(#{@max_b-1-p_index})}<=#{i})")
-              s2_str = ("-p(s_#{cond[1]}^{(#{@max_b-1-p_index})}<=#{i})")
-              wff += "#{s2} "
-              wff_str += "#{s2_str} "
-              print_flag = true
-            end
-
-            current_tv = get_number(@tseitin_count)
-            wff += "#{current_tv} "
-            wff_str += "#{current_tv} "
-
-            f.puts "#{wff}0" if print_flag
-            puts wff_str if @debug_flag && print_flag
-          end# }}}}}}
-
-          # wff = "-#{tv} "
-          # wff_str = "-#{tv} "
-          # wff += "#{prev_tv} " if prev_tv != 0
-          # wff_str += "#{prev_tv} " if prev_tv !=0
-          #
-          # wff += "#{current_tv} " if pi==3
-          # wff_str += "#{current_tv} " if pi==3
-
-          f.puts "#{wff}0" if pi == 3
-          puts "#{wff_str}0" if pi == 3 && @debug_flag
-          
-          prev_tv = -1 * current_tv
-          @tseitin_count.next!
+          end
         end
 
         cond = cond[1], cond[0]
@@ -246,7 +243,7 @@ class Scheduling # {{{
   def print_conditions# {{{
     f = open(@satfile, "w")
     print_define_variables(f)
-    # print_exclusive_conditions(f)
+    print_exclusive_conditions(f)
     f.close
   end# }}}
 
