@@ -27,10 +27,9 @@ class Scheduling # {{{
     @num_count = 0
     @tseitin_count = "a"
     
-    @satfile = "scheduling_compact-order.sat"
-    @replfile = "scheduling_compact-order.repl"
+    @satfile = "scheduling_compact-direct.sat"
+    @replfile = "scheduling_compact-direct.repl"
 
-    # @max = 17000
     @max_b = @max.to_s(@B).chars.length
     puts "n=#{@n}  m=#{@m}  max=#{@max}"
     puts "B=#{@B}  digit: #{@max_b}"
@@ -123,51 +122,22 @@ class Scheduling # {{{
     end# }}}
 
 
-  end# }}}
-
-  def print_leq_condition(f, t, s1, c1, s2, c2, p, ff=false)# {{{
-    # puts "#{s2} + #{p} + #{c1} <= #{s1} + #{@B}#{c2}"
-    # t  = get_number(@tseitin_count)
-    # s1 = "s_#{cond[0]}^{(#{i+1})}"
-    # c1 = "c_{s_#{cond[0]}^{(#{i+1})}}"
-    # s2 = "s_#{cond[1]}^{(#{i+1})}"
-    # c2 = "c_{s_#{cond[0]}^{(#{i+2})}}"
-    # p  =@p[cond[0]-1]
-
-    (@B).times do |i|
-      vs = [ i+@B-p-1, i+@B-p, i-p-1, i-p ]
-      vs_str = [ "i+@B-p-1", "i+@B-p", "i-p-1", "i-p" ]
-      # puts "2019/05/08 : #{s1}"
-      s1_t = get_number "p(#{s1}<=#{i})" if i < @B-1
-      # puts "p(#{s1}<=#{i})"
-      c1_t = -1 * (get_number c1)
-      c2_t = -1 * (get_number c2)
-
-      vs.each_with_index do |v, vi|
-        # puts "v#{vi} #{vs_str[vi]} : #{v}"
-        if v < @B-1
-          f.print "-#{t} "
-          f.print "-#{s1_t} " if i < @B-1
-          f.print "#{c1_t} #{c2_t} "
-          if v >= 0
-            s2_t = get_number "p(#{s2}<=#{v})"
-            # puts "p(#{s2}<=#{v})"
-            f.print "#{s2_t} "
-          else 
-            # puts "禁止"
-          end
-          f.puts "0"
-        end
-        c1_t *= -1
-        if c1_t < 0
-          c2_t *= -1
+    # define carry conditions
+    puts "\ndefine carry conditions" if @debug_flag
+    1.upto (@n*@m) do |vi|
+      p_l = @p[vi-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+      p p_l
+      p_l.each_with_index do |i,index|
+        (@B-1).downto (@B-i) do |j|
+          s = get_number("p(s_#{vi}^{(#{@max_b-index-1})}=#{j})")
+          c = get_number("c_{s_#{vi}^{(#{@max_b-index})}}")
+          puts "p(s_#{vi}^{(#{@max_b-i-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}" if @debug_flag
+          f.puts "#{-1*s} #{c} 0"
         end
       end
     end
-
-    
-  
   end# }}}
+
 
   def print_exclusive_conditions(f)# {{{
     @conditions.each do |cond|
