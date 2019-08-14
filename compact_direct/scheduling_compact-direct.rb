@@ -169,7 +169,7 @@ class Scheduling # {{{
   def print_exclusive_conditions(f)# {{{
     @conditions.each do |cond|
       tseitin_variable = []
-      tseitin_variable << get_number(@tseitin_count)
+      tseitin_variable << get_number(@tseitin_count.next!)
       tseitin_variable << get_number(@tseitin_count.next!)
       f.puts "#{tseitin_variable[0]} #{tseitin_variable[1]} 0"
 
@@ -186,23 +186,27 @@ class Scheduling # {{{
         prev_tv = 0
         current_tv = 0
 
+        prev = ""
         p_l.each_with_index do |pi,p_index|
+          t = get_number(@tseitin_count.next!);
           @B.times do |i|
             ■ = [i-pi, i-1-pi, i+@B-pi, i+@B-1-pi]
-            p ■
+            p ■ if @debug_flag
+
             ■.each_with_index do |▲,▲i| 
               next if ▲ >= @B-1
               s2 = get_number("p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{i})")
               c1 = get_number("c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}}")
               c2 = get_number("c_{s_#{cond[0]}^{(#{@max_b-p_index})}}")
-              c1 *= -1 if ▲i < 2
-              c2 *= -1 if ▲i.even?
+              c1 *= -1 if ▲i.even?
+              c2 *= -1 if ▲i < 2
+
 
               # print "#{tv} → " if @debug_flag
               # print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
               # print "¬" if ▲i > 1
               # print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
-              # print "¬" if ▲i.odd?
+              # print "¬" if ▲i.even?
               # print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
 
               # f.print "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} " 
@@ -210,7 +214,8 @@ class Scheduling # {{{
               if (▲ >= 0) 
                 (▲ + 1).upto(@B-1) do |j|
                   s1 = get_number("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{j})")
-                  print "#{tv} → " if @debug_flag
+                  print "#{tv} →" if @debug_flag
+                  print "#{prev} " if @debug_flag
                   print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
                   print "¬" if ▲i < 2
                   print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
@@ -218,20 +223,38 @@ class Scheduling # {{{
                   print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
                   puts "¬p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{j})" if @debug_flag
 
-                  f.puts "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} #{-1*s1} 0" 
+                  f.puts "#{-1*tv}#{prev} #{-1*s2} #{-1*c1} #{-1*c2} #{-1*s1} 0" 
+                end
+                if (▲ <= @B-1) 
+                  s1 = get_number("p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{▲})")
+                  print "#{tv} →" if @debug_flag
+                  print "#{prev} " if @debug_flag
+                  print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
+                  print "¬" if ▲i < 2
+                  print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
+                  print "¬" if ▲i.even?
+                  print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
+                  print "¬p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{▲})" if @debug_flag
+                  puts " #{t}" if @debug_flag
+
+                  f.puts "#{-1*tv}#{prev} #{-1*s2} #{-1*c1} #{-1*c2} #{-1*s1} #{t} 0"
                 end
               else
-                print "#{tv} → " if @debug_flag
-                print 
-                "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
+                # f.puts "禁止"
+                print "#{tv} →" if @debug_flag
+                print "#{prev} " if @debug_flag
+                print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
                 print "¬" if @debug_flag && ▲i > 1
                 print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
-                print "¬" if @debug_flag && ▲i.odd?
+                print "¬" if @debug_flag && ▲i.even?
                 puts "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
-                f.puts "#{-1*tv} #{-1*s2} #{-1*c1} #{-1*c2} 0"
+                f.puts "#{-1*tv}#{prev} #{-1*s2} #{-1*c1} #{-1*c2} 0"
               end
             end
           end
+          prev += " #{-1*t}";
+          # prev = " #{-1*t}"
+          # p prev;
         end
 
         cond = cond[1], cond[0]
