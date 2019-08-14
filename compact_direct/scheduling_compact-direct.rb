@@ -116,7 +116,7 @@ class Scheduling # {{{
       # max - pi をしてその値を B進 に分解
       # si の各桁が その値以下であるという制約を追加す:
       # puts "max : #{@max - @p[vi-1]}"
-      max = (@max - @p[vi-1]).to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+      max = (@max - @p[vi-1]).to_s(@B).rjust(@max_b, '0').chars.map{|i| i.to_i(@B)}
       # print "define Domain max : "
       p max
       perv = ""
@@ -145,7 +145,7 @@ class Scheduling # {{{
     # define carry conditions
     puts "\ndefine carry conditions" if @debug_flag
     1.upto (@n*@m) do |vi|
-      p_l = @p[vi-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+      p_l = @p[vi-1].to_s(@B).rjust(@max_b, '0').chars.map{|i| i.to_i(@B)}
       p p_l
       p_l.each_with_index do |i,index|
         ss = ""
@@ -179,7 +179,7 @@ class Scheduling # {{{
       # a -> (s1 + p1 <= s2)
       # b -> (s2 + p2 <= s1)
       tseitin_variable.each do |tv|
-        p_l = @p[cond[0]-1].to_s(@B).rjust(@max_b, '0').chars.map(&:to_i)
+        p_l = @p[cond[0]-1].to_s(@B).rjust(@max_b, '0').chars.map{|i| i.to_i(@B)}
         p p_l if @debug_flag
 
         puts "#{tseitin_variable[0]} #{tseitin_variable[1]} 0" if @debug_flag
