@@ -1,6 +1,6 @@
 class Scheduling # {{{
   def initialize# {{{
-    @debug_flag = true
+    @debug_flag = false
     input_file = ""
     if ARGV.length <= 0
       puts "OSS file : "
@@ -35,12 +35,12 @@ class Scheduling # {{{
     puts "B=#{@B}  digit: #{@max_b}"
     puts ""
 
-    puts "process times"
+    puts "process times" if @debug_flag
     1.upto(@n*@m) do |i|
-      print "#{@p[i-1]} "
-      puts "" if i % @n==0
+      print "#{@p[i-1]} " if @debug_flag
+      puts "" if i % @n==0 && @debug_flag
     end
-    puts ""
+    puts "" if @debug_flag
     
     # @p =
     print "conditions : " if @debug_flag
@@ -118,7 +118,7 @@ class Scheduling # {{{
       # puts "max : #{@max - @p[vi-1]}"
       max = (@max - @p[vi-1]).to_s(@B).rjust(@max_b, '0').chars.map{|i| i.to_i(@B)}
       # print "define Domain max : "
-      p max
+      p max if @debug_flag
       perv = ""
       prev_str = ""
       max.each_with_index do |m,i|
@@ -146,7 +146,7 @@ class Scheduling # {{{
     puts "\ndefine carry conditions" if @debug_flag
     1.upto (@n*@m) do |vi|
       p_l = @p[vi-1].to_s(@B).rjust(@max_b, '0').chars.map{|i| i.to_i(@B)}
-      p p_l
+      p p_l if @debug_flag
       p_l.each_with_index do |i,index|
         ss = ""
         ss_str = ""
@@ -159,7 +159,7 @@ class Scheduling # {{{
           f.puts "#{-1*s} #{c} 0"
           ss += "#{s} ";
         end
-        puts "c_{s_#{vi}^{(#{@max_b-index})}} → #{ss_str}"
+        puts "c_{s_#{vi}^{(#{@max_b-index})}} → #{ss_str}" if @debug_flag
         f.puts "#{-1*c} #{ss} 0"
       end
     end
@@ -217,9 +217,9 @@ class Scheduling # {{{
                   print "#{tv} →" if @debug_flag
                   print "#{prev} " if @debug_flag
                   print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
-                  print "¬" if ▲i < 2
+                  print "¬" if ▲i < 2 && @debug_flag
                   print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
-                  print "¬" if ▲i.even?
+                  print "¬" if ▲i.even? && @debug_flag
                   print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
                   puts "¬p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{j})" if @debug_flag
 
@@ -230,9 +230,9 @@ class Scheduling # {{{
                   print "#{tv} →" if @debug_flag
                   print "#{prev} " if @debug_flag
                   print "p(s_#{cond[0]}^{(#{@max_b-1-p_index})}=#{i}) → " if @debug_flag
-                  print "¬" if ▲i < 2
+                  print "¬" if ▲i < 2 && @debug_flag
                   print "c_{s_#{cond[0]}^{(#{@max_b-1-p_index})}} → " if @debug_flag
-                  print "¬" if ▲i.even?
+                  print "¬" if ▲i.even? && @debug_flag
                   print "c_{s_#{cond[0]}^{(#{@max_b-p_index})}} →" if @debug_flag
                   print "¬p(s_#{cond[1]}^{(#{@max_b-1-p_index})}=#{▲})" if @debug_flag
                   puts " #{t}" if @debug_flag
