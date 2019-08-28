@@ -152,15 +152,25 @@ class Scheduling # {{{
         ss_str = ""
         c = get_number("c_{s_#{vi}^{(#{@max_b-index})}}")
 
+        a = get_number(@tseitin_count.next!)
+
         (@B-1).downto (@B-i) do |j|
           s = get_number("p(s_#{vi}^{(#{@max_b-index-1})}=#{j})")
-          puts "p(s_#{vi}^{(#{@max_b-i-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}" if @debug_flag
+          puts "p(s_#{vi}^{(#{@max_b-index-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}" if @debug_flag
           ss_str += "p(s_#{vi}^{(#{@max_b-i-1})}=#{j}) → c_{s_#{vi}^{(#{@max_b-index})}}"
           f.puts "#{-1*s} #{c} 0"
           ss += "#{s} ";
         end
         puts "c_{s_#{vi}^{(#{@max_b-index})}} → #{ss_str}" if @debug_flag
-        f.puts "#{-1*c} #{ss} 0"
+        f.puts "#{-1*c} #{ss} #{a} 0"
+
+        s = get_number("p(s_#{vi}^{(#{@max_b-index-1})}=#{@B-i-1})") if (@max_b-index-1)<@max_b
+        c1 = get_number("c_{s_#{vi}^{(#{@max_b-index-1})}}")
+        f.puts "#{-1*a} #{s} 0" if @B-i-1>0
+        f.puts "#{-1*a} #{c1} 0"
+        f.print "#{-1*s} " if @B-i-1>0
+        f.puts "#{-1*c1} #{c} 0"
+        
       end
     end
   end# }}}
